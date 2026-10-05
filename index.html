@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My motors Supplies — El mundo de tu carro</title>
+<meta name="description" content="Un viaje cinematográfico por los repuestos de My motors Supplies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0c; --ink:#fafafa; --mut:#b6b6ba;
+    --orange:#f2621a; --orange-hi:#ff7a2e;
+    --n:6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--bg)}
+  body{background:var(--bg);color:var(--ink);
+    font-family:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .scroll-space{height:calc(var(--n)*165vh)}
+  .stage{position:fixed;inset:0;height:100vh;height:100dvh;overflow:hidden;background:var(--bg)}
+  .scene{position:absolute;inset:-7%;opacity:0;visibility:hidden;will-change:transform,opacity}
+  .scene img{width:100%;height:100%;object-fit:cover;display:block}
+  .vignette{position:absolute;inset:0;pointer-events:none;z-index:5;
+    background:radial-gradient(120% 90% at 50% 45%, transparent 52%, rgba(0,0,0,.62) 100%),
+               linear-gradient(to top, rgba(0,0,0,.55), transparent 32%)}
+  .grain{position:absolute;inset:0;pointer-events:none;z-index:6;opacity:.5;mix-blend-mode:overlay}
+  .rail{position:absolute;top:0;left:0;right:0;z-index:20;
+    display:flex;align-items:center;gap:14px;padding:18px 22px calc(18px);
+    background:linear-gradient(to bottom, rgba(0,0,0,.55), transparent)}
+  .rail .track{flex:1;height:2px;background:rgba(255,255,255,.18);border-radius:2px;overflow:hidden}
+  .rail .bar{height:100%;width:100%;background:var(--orange);border-radius:2px;
+    transform:scaleX(0);transform-origin:left}
+  .rail .count{font-size:12px;letter-spacing:.22em;color:var(--mut);font-weight:600;white-space:nowrap}
+  .cap{position:absolute;z-index:10;left:6vw;bottom:11vh;max-width:78vw;
+    opacity:0;transform:translateY(26px);will-change:transform,opacity;pointer-events:none}
+  .cap-num{font-size:13px;font-weight:700;letter-spacing:.34em;color:var(--orange);margin-bottom:10px}
+  .cap-title{font-family:'Anton','Arial Narrow',sans-serif;font-size:clamp(44px,9vw,110px);
+    line-height:.94;letter-spacing:.01em;text-transform:uppercase}
+  .cap-sub{margin-top:12px;font-size:clamp(15px,2.4vw,21px);color:var(--mut);font-weight:500}
+  .intro{position:absolute;z-index:10;left:6vw;bottom:11vh;max-width:82vw;will-change:transform,opacity}
+  .kicker{font-size:13px;font-weight:700;letter-spacing:.34em;color:var(--orange);margin-bottom:14px}
+  .intro h1{font-family:'Anton','Arial Narrow',sans-serif;font-weight:400;
+    font-size:clamp(52px,11vw,132px);line-height:.92;text-transform:uppercase}
+  .intro h1 em{font-style:normal;color:var(--orange)}
+  .intro p{margin-top:16px;color:var(--mut);font-size:clamp(15px,2.4vw,20px);font-weight:500;max-width:34ch}
+  .hint{position:absolute;z-index:10;left:50%;bottom:26px;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    font-size:11px;letter-spacing:.3em;color:var(--mut);font-weight:600;will-change:opacity}
+  .hint .line{width:1px;height:44px;background:linear-gradient(var(--orange),transparent);
+    animation:drop 1.8s ease-in-out infinite}
+  @keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
+    55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+  .outro{position:absolute;z-index:10;left:6vw;right:6vw;bottom:10vh;will-change:transform,opacity;opacity:0}
+  .outro h2{font-family:'Anton','Arial Narrow',sans-serif;font-weight:400;
+    font-size:clamp(46px,10vw,118px);line-height:.94;text-transform:uppercase}
+  .outro h2 em{font-style:normal;color:var(--orange)}
+  .outro .meta{margin:16px 0 26px;color:var(--mut);font-size:clamp(14px,2.2vw,18px);
+    letter-spacing:.08em;font-weight:600}
+  .cta{display:inline-flex;align-items:center;gap:12px;background:var(--orange);color:#14080a;
+    font-weight:700;font-size:17px;letter-spacing:.02em;text-decoration:none;
+    padding:16px 30px;border-radius:999px;transition:background .25s,transform .25s}
+  .cta:hover{background:var(--orange-hi);transform:translateY(-2px)}
+  .cta svg{width:20px;height:20px}
+  .fine{margin-top:18px;font-size:12.5px;color:var(--mut);letter-spacing:.04em}
+  /* reduced motion: static stacked layout */
+  .static .scroll-space{display:none}
+  .static .stage{position:static;height:auto}
+  .static .scene{position:relative;inset:0;height:92vh;opacity:1!important;visibility:visible!important;transform:none!important}
+  .static .cap,.static .intro{position:relative;left:0;bottom:0;padding:8vh 6vw 10vh;
+    opacity:1!important;transform:none!important}
+  .static .outro{position:relative;left:0;right:0;bottom:0;padding:8vh 6vw 12vh;opacity:1!important}
+  .static .hint,.static .rail{display:none}
+  @media (max-width:640px){
+    .cap{bottom:9vh}
+    .intro{bottom:9vh}
+  }
+</style>
+</head>
+<body>
+<div class="scroll-space" aria-hidden="true"></div>
+
+<main class="stage" id="stage" aria-label="Viaje cinematográfico por My motors Supplies">
+    <figure class="scene" data-scene="0"><img src="img/e1.jpg" alt="Escena 1 — My motors Supplies"></figure>
+    <figure class="scene" data-scene="1"><img src="img/e2.jpg" alt="Escena 2 — My motors Supplies"></figure>
+    <figure class="scene" data-scene="2"><img src="img/e3.jpg" alt="Escena 3 — My motors Supplies"></figure>
+    <figure class="scene" data-scene="3"><img src="img/e4.jpg" alt="Escena 4 — My motors Supplies"></figure>
+    <figure class="scene" data-scene="4"><img src="img/e5.jpg" alt="Escena 5 — My motors Supplies"></figure>
+    <figure class="scene" data-scene="5"><img src="img/e6.jpg" alt="Escena 6 — My motors Supplies"></figure>
+  <div class="vignette" aria-hidden="true"></div>
+
+    <div class="cap" data-cap="0">
+      <div class="cap-num">01</div>
+      <div class="cap-title">El taller</div>
+      <div class="cap-sub">Donde cada pieza cuenta.</div>
+    </div>
+    <div class="cap" data-cap="1">
+      <div class="cap-num">02</div>
+      <div class="cap-title">Motor</div>
+      <div class="cap-sub">El corazón de tu carro.</div>
+    </div>
+    <div class="cap" data-cap="2">
+      <div class="cap-num">03</div>
+      <div class="cap-title">Frenos</div>
+      <div class="cap-sub">Frenar también es potencia.</div>
+    </div>
+    <div class="cap" data-cap="3">
+      <div class="cap-num">04</div>
+      <div class="cap-title">Suspensión</div>
+      <div class="cap-sub">Domina cada hueco.</div>
+    </div>
+    <div class="cap" data-cap="4">
+      <div class="cap-num">05</div>
+      <div class="cap-title">Eléctrico</div>
+      <div class="cap-sub">Energía que no falla.</div>
+    </div>
+    <div class="cap" data-cap="5">
+      <div class="cap-num">06</div>
+      <div class="cap-title">El final</div>
+      <div class="cap-sub">Mira lo que viene.</div>
+    </div>
+
+  <div class="intro" id="intro">
+    <div class="kicker">MY MOTORS SUPPLIES · VENEZUELA</div>
+    <h1>El mundo de tu carro, <em>en un scroll.</em></h1>
+    <p>Seis escenas. Cero palabras de más. Desliza y entra al taller.</p>
+  </div>
+
+  <div class="outro" id="outro">
+    <div class="kicker">MY MOTORS SUPPLIES</div>
+    <h2>Tu carro lo pide.<br><em>Nosotros lo tenemos.</em></h2>
+    <div class="meta">40 REPUESTOS · 12 CATEGORÍAS · 8 MARCAS</div>
+    <a class="cta" href="https://my-motors-supplies.vercel.app/catalogo.html">
+      Ver catálogo
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+    <div class="fine">Se abre la tienda — buscador, filtros y compra por WhatsApp.</div>
+  </div>
+
+  <div class="rail" aria-hidden="true">
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <div class="count" id="count">01 / 06</div>
+  </div>
+
+  <div class="hint" id="hint" aria-hidden="true"><span>DESLIZA</span><span class="line"></span></div>
+</main>
+
+<script>
+(function(){
+  var N = 6;
+  var stage = document.getElementById('stage');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.body.classList.add('static');
+    return;
+  }
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+  var caps = Array.prototype.slice.call(document.querySelectorAll('.cap'));
+  var intro = document.getElementById('intro');
+  var outro = document.getElementById('outro');
+  var hint = document.getElementById('hint');
+  var bar = document.getElementById('bar');
+  var count = document.getElementById('count');
+  var dirs = [1,-1,1,-1,1,-1];
+  var ticking = false;
+
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+
+  function frame(){
+    ticking = false;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var p = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+    var f = p * N;
+
+    for (var i=0;i<N;i++){
+      var d = f - i, o = 0;
+      if (d >= -0.35 && d < 0) o = (d + 0.35) / 0.35;
+      else if (d >= 0 && d <= 0.65) o = 1;
+      else if (d > 0.65 && d <= 1) o = 1 - (d - 0.65) / 0.35;
+      var k = clamp(d, 0, 1);
+      var scale = 1.10 + 0.17 * k;
+      var tx = dirs[i] * (-3 + 6 * k);
+      var ty = -2 + 4 * k;
+      var el = scenes[i];
+      el.style.opacity = o.toFixed(3);
+      el.style.visibility = o <= 0.001 ? 'hidden' : 'visible';
+      el.style.transform = 'scale(' + scale.toFixed(4) + ') translate(' + tx.toFixed(2) + '%,' + ty.toFixed(2) + '%)';
+
+      var c = caps[i], co = 0, cy = 26;
+      if (d > 0.05 && d < 0.62){
+        var rin = clamp((d - 0.05) / 0.10, 0, 1);
+        var rout = clamp((0.62 - d) / 0.12, 0, 1);
+        co = Math.min(rin, rout);
+        cy = 26 * (1 - co);
+      }
+      c.style.opacity = co.toFixed(3);
+      c.style.transform = 'translateY(' + cy.toFixed(1) + 'px)';
+      c.style.visibility = co <= 0.001 ? 'hidden' : 'visible';
+    }
+
+    // intro card rides on scene 0
+    var io = clamp(1 - f / 0.55, 0, 1);
+    intro.style.opacity = io.toFixed(3);
+    intro.style.transform = 'translateY(' + (30 * (1 - io)).toFixed(1) + 'px)';
+    intro.style.visibility = io <= 0.001 ? 'hidden' : 'visible';
+
+    // outro card on the last scene
+    var od = f - (N - 1);
+    var oo = od > 0.45 ? clamp((od - 0.45) / 0.18, 0, 1) : 0;
+    outro.style.opacity = oo.toFixed(3);
+    outro.style.transform = 'translateY(' + (30 * (1 - oo)).toFixed(1) + 'px)';
+    outro.style.visibility = oo <= 0.001 ? 'hidden' : 'visible';
+    outro.style.pointerEvents = oo > 0.5 ? 'auto' : 'none';
+
+    hint.style.opacity = p < 0.015 ? '1' : '0';
+
+    bar.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+    var cur = Math.min(N, Math.floor(f) + 1);
+    count.textContent = (cur < 10 ? '0' + cur : cur) + ' / 06';
+  }
+
+  window.addEventListener('scroll', function(){
+    if (!ticking){ ticking = true; requestAnimationFrame(frame); }
+  }, {passive:true});
+  window.addEventListener('resize', frame);
+  frame();
+})();
+</script>
+</body>
+</html>
